@@ -31,6 +31,7 @@ already protected — never duplicated).
 
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
@@ -72,6 +73,10 @@ def _export_keys(bundle) -> None:
             path.chmod(0o600)
         except OSError:
             pass
+        # Hosted demo only (no shell access): set SAKSHYA_SEED_PRINT_KEYS=1 to print the
+        # demo key files to the service log so they can be copied. Remove the variable after.
+        if os.environ.get("SAKSHYA_SEED_PRINT_KEYS") == "1":
+            print(f"----- BEGIN {name} -----\n{text}\n----- END {name} -----")
 
 
 def run():
