@@ -184,6 +184,26 @@ export function LoginScreen() {
 
             <div className="or-divider">OR</div>
 
+            <section className="demo-access-card" aria-labelledby="demo-access-title">
+              <div className="demo-access-head">
+                <span className="demo-access-icon" aria-hidden="true">
+                  <Icon name="key" size={20} strokeWidth={2} />
+                </span>
+                <div>
+                  <h3 id="demo-access-title">Demo Access</h3>
+                  <p>Explore the officer console with the public demo account. No real data is used.</p>
+                </div>
+              </div>
+              <div className="demo-access-id">
+                <span>Officer ID</span>
+                <code>REC-OFFICER01</code>
+              </div>
+              <button type="button" className="demo-access-btn" onClick={fillDemo}>
+                Use Demo Credentials (Officer 01)
+                <Icon name="arrowRight" size={18} strokeWidth={2} />
+              </button>
+            </section>
+
             <div className="login-security-badge">
               <Icon name="shieldCheck" size={28} strokeWidth={2} />
               <span>
@@ -193,9 +213,6 @@ export function LoginScreen() {
               </span>
             </div>
 
-            <button type="button" className="demo-link" onClick={fillDemo}>
-              Use demo credentials (Officer 01)
-            </button>
           </form>
         </div>
       </div>

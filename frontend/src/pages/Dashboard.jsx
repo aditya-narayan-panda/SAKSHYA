@@ -66,7 +66,7 @@ function ActivityChart({ timeRange, setTimeRange }) {
   const data = ranges[timeRange] || ranges['7D'];
   const maxVal = 25;
   const svgWidth = 500;
-  const svgHeight = 160;
+  const svgHeight = 180;
   const padding = 25;
 
   const points = data.map((d, i) => {
@@ -109,10 +109,10 @@ function ActivityChart({ timeRange, setTimeRange }) {
       </div>
 
       <div className="svg-chart-wrap">
-        <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} width="100%" height="100%" preserveAspectRatio="none">
+        <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} width="100%" preserveAspectRatio="xMidYMid meet">
           <defs>
             <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#19c8ff" stopOpacity="0.35" />
+              <stop offset="0%" stopColor="#1769E8" stopOpacity="0.35" />
               <stop offset="100%" stopColor="#1477ff" stopOpacity="0.0" />
             </linearGradient>
             <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
@@ -127,7 +127,7 @@ function ActivityChart({ timeRange, setTimeRange }) {
             return (
               <g key={val}>
                 <line x1={padding} y1={y} x2={svgWidth - padding} y2={y} stroke="rgba(90, 150, 220, 0.12)" strokeDasharray="3 3" />
-                <text x={padding - 6} y={y + 3} fill="var(--text-dim)" fontSize="9" textAnchor="end" fontFamily="var(--font-mono)">
+                <text x={padding - 6} y={y + 3} fill="var(--text-muted)" fontSize="10" fontWeight="600" textAnchor="end" fontFamily="var(--font-mono)">
                   {val}
                 </text>
               </g>
@@ -138,13 +138,13 @@ function ActivityChart({ timeRange, setTimeRange }) {
           <path d={areaD} fill="url(#areaGrad)" />
 
           {/* Line */}
-          <path d={pathD} fill="none" stroke="#19c8ff" strokeWidth="2.5" filter="url(#glow)" />
+          <path d={pathD} fill="none" stroke="#1769E8" strokeWidth="2.5" filter="url(#glow)" />
 
           {/* Points & Labels */}
           {points.map((p, i) => (
             <g key={i}>
-              <circle cx={p.x} cy={p.y} r="4" fill="#020812" stroke="#19c8ff" strokeWidth="2" />
-              <text x={p.x} y={svgHeight - 6} fill="var(--text-muted)" fontSize="9" textAnchor="middle" fontFamily="var(--font-mono)">
+              <circle cx={p.x} cy={p.y} r="4" fill="#FFFFFF" stroke="#0284C7" strokeWidth="2" />
+              <text x={p.x} y={svgHeight - 6} fill="var(--navy-muted)" fontSize="10" fontWeight="600" textAnchor="middle" fontFamily="var(--font-mono)">
                 {p.label}
               </text>
             </g>
