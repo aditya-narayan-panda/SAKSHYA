@@ -1,0 +1,73 @@
+# SAKSHYA — fully local demo stack (SIH 2026, SIH26237).
+#
+#   Browser
+#     |
+#   localhost (:8080 nginx frontend, :8100 backend API)
+#     |
+#   FastAPI backend -> local SQLite (./storage/sakshya.db) + local files
+#     (ML-KEM-768 / ML-DSA-65, watermark engine, hash-chain ledger, reports)
+#
+# No cloud, no public blockchain, no external API at runtime.
+# Build needs internet ONCE (base images + pip/npm); after that the stack
+# runs with the network disconnected.
+#
+#   mkdir -p secrets && (umask 077; printf '%s' 'YOUR-LONG-MASTER-PASSWORD' > secrets/master_password.txt)
+#   docker compose build
+#   docker compose up
+#   # first run only, in another terminal:
+#   docker compose exec backend python -m app.seed
+#   # stop:
+#   docker compose down
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+    container_name: sakshya-backend
+    # The ledger is persistent (3 node SQLite files + persistent node keys), so a restart re-opens
+    # the SAME chain. The backend needs the master password at boot: mount it as a 0600 file.
+    restart: unless-stopped
+    environment:
+      SAKSHYA_STORAGE_DIR: /app/storage
+      SAKSHYA_MASTER_PASSWORD_FILE: /run/secrets/sakshya_master_password
+      SAKSHYA_LEDGER_DIR: /app/storage/ledger
+      SAKSHYA_DATABASE_URL: sqlite:////app/storage/sakshya.db
+      SAKSHYA_CORS_ORIGINS: "http://localhost:8080,http://127.0.0.1:8080,http://localhost:5173,http://127.0.0.1:5173"
+      SAKSHYA_LEDGER_NODES: "3"
+      SAKSHYA_APP_ENV: production
+    volumes:
+      # Bind-mount of the real ./storage folder: the seed PDFs under
+      # storage/documents/seed/ are visible inside the container, and you can
+      # inspect generated keys/reports on the host during the demo.
+      - ./storage:/app/storage
+    secrets:
+      - sakshya_master_password
+    ports:
+      - "8100:8100"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8100/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend.Dockerfile
+      args:
+        # Use the nginx /api proxy inside Docker (same-origin, no CORS).
+        VITE_API_BASE_URL: /api
+    container_name: sakshya-frontend
+    restart: "no"
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "8080:80"
+
+# Master password for the key ceremony (README "Air-gapped key ceremony"). Keep this file OFF the
+# repo/disk that holds ./storage - e.g. an offline USB mounted at ./secrets. chmod 600.
+secrets:
+  sakshya_master_password:
+    file: ./secrets/master_password.txt

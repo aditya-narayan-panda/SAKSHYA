@@ -1,0 +1,12 @@
+# Docker build context is the repository root (see docker-compose.yml).
+# Exclude host-built artifacts so they never overwrite what the images install
+# themselves. In particular a Windows-installed frontend/node_modules would clobber
+# the Linux modules that `npm ci` installs inside the frontend image
+# (docker/frontend.Dockerfile runs `COPY frontend/. .` after `npm ci`).
+**/node_modules
+frontend/dist
+backend/venv
+backend/.venv
+**/__pycache__
+**/*.pyc
+.git

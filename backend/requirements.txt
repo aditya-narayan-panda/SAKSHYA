@@ -1,0 +1,32 @@
+# SAKSHYA backend — pinned runtime dependencies.
+# Tested with Python 3.13 on Windows. Install with:
+#   pip install -r requirements.txt
+# NOTE: installation needs internet once. After that, the app runs fully
+# offline/air-gapped (no external API is called at runtime).
+
+# --- Core web framework ---
+fastapi==0.141.1
+uvicorn[standard]==0.52.3
+python-multipart==0.0.32
+pydantic==2.9.2
+
+# --- Database (local SQLite; file driver only, no server) ---
+sqlalchemy==2.0.52
+alembic==1.14.0
+
+# --- Password hashing (local bcrypt; PBKDF2 stdlib fallback if unavailable) ---
+bcrypt==5.0.0
+
+# --- Cryptography ---
+# PQC-ONLY (MUST-6): cryptography>=48 is REQUIRED for ML-KEM-768 / ML-DSA-65 and this project
+# pins 50.0.0. With an older version the backend REFUSES TO BOOT (no silent classical fallback);
+# the only escape hatch is the developer-only flag SAKSHYA_ALLOW_FALLBACK=true, never honoured
+# when SAKSHYA_APP_ENV=production. GET /api/system/crypto-status reports what is really active.
+cryptography==50.0.0
+
+# --- Document / watermark / report generation (all local, no cloud) ---
+pypdf==6.19.0
+reportlab==5.0.1
+
+# --- HTTP client (test client + reserved for future inter-node calls) ---
+httpx==0.28.1
